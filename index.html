@@ -162,20 +162,63 @@
         </div>
         <div class="row justify-content-center">
           <div class="col-md-6">
-            <form>
+            <div class="alert alert-success alert-dismissible fade show d-none" role="alert">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"
+                viewBox="0 0 16 16"
+                role="img"
+                aria-label="Warning:"
+              >
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+                />
+              </svg>
+              <strong>Pesan sudah terkirim.</strong>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
+            <form name="contact-form">
               <div class="mb-3">
                 <label for="name" class="form-label">Nama Lengkap</label>
-                <input type="text" class="form-control" id="name" aria-describedby="name" />
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  aria-describedby="name"
+                  name="nama"
+                />
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Alamat Email</label>
-                <input type="email" class="form-control" id="email" aria-describedby="email" />
+                <input
+                  type="email"
+                  class="form-control"
+                  id="email"
+                  aria-describedby="email"
+                  name="email"
+                />
               </div>
               <div class="mb-3">
                 <label for="pesan" class="form-label">Pesan</label>
-                <textarea class="form-control" id="pesan" rows="3"></textarea>
+                <textarea class="form-control" id="pesan" rows="3" name="pesan"></textarea>
               </div>
-              <button type="submit" class="btn btn-warning">Kirim</button>
+              <button type="submit" class="btn btn-warning btn-kirim">Kirim</button>
+              <button class="btn btn-warning btn-loading d-none" type="button" disabled>
+                <span
+                  class="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Loading...
+              </button>
             </form>
           </div>
         </div>
@@ -203,5 +246,36 @@
       integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
       crossorigin="anonymous"
     ></script>
+
+    <!-- Submit Form to Google Sheets -->
+    <script>
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbwj3m7f0MljDMwuPJvZ5fP7UlOOu2K6SZCrK5WmI3qXuxuMtneEr3iFD5IYChLO9mKQ/exec";
+      const form = document.forms["contact-form"];
+      const btnKirim = document.querySelector(".btn-kirim");
+      const btnLoading = document.querySelector(".btn-loading");
+      const alert = document.querySelector(".alert");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        // tombol loading aktif
+        btnLoading.classList.toggle("d-none");
+        btnKirim.classList.toggle("d-none");
+
+        fetch(scriptURL, { method: "POST", body: new FormData(form) })
+          .then((response) => {
+            // tombol kirim aktif
+            btnLoading.classList.toggle("d-none");
+            btnKirim.classList.toggle("d-none");
+            // alert aktif
+            alert.classList.toggle("d-none");
+            // reset form
+            form.reset();
+
+            console.log("Success!", response);
+          })
+          .catch((error) => console.error("Error!", error.message));
+      });
+    </script>
   </body>
 </html>
